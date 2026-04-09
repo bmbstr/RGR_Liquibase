@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управління користувачами РГР</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header class="main-header">
+        <div class="container">
+            <h1><i class="fas fa-database"></i> Управління профілями (РГР)</h1>
+            <p>Дані завантажені через Liquibase з MongoDB</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="user-grid" class="user-grid">
+            <div class="loading">Завантаження профілів...</div>
+        </div>
+    </main>
+
+    <script>
+        // Функція для отримання даних з твого API (server.js)
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users');
+                if (!response.ok) throw new Error('Помилка мережі');
+                const users = await response.json();
+
+                const grid = document.getElementById('user-grid');
+                grid.innerHTML = ''; // Очищаємо напис "Завантаження"
+
+                if (users.length === 0) {
+                    grid.innerHTML = '<div class="no-data">База даних порожня. Запустіть liquibase update!</div>';
+                    return;
+                }
+
+                // Створюємо картку для кожного користувача
+                users.forEach(user => {
+                    grid.appendChild(createUserCard(user));
+                });
+
+            } catch (error) {
+                console.error('Помилка:', error);
+                document.getElementById('user-grid').innerHTML = '<div class="error">Не вдалося завантажити дані. Перевірте сервер.</div>';
+            }
+        }
+
+        // Функція створення HTML-коду однієї картки
+        function createUserCard(user) {
+            const card = document.createElement('div');
+            card.className = 'user-card';
+
+            // Використовуємо твої унікальні поля: surname, name, patronymic, age, status
+            card.innerHTML = `
+                <div class="card-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="card-body">
+                    <h3>${user.surname} ${user.name}</h3>
+                    <p class="patronymic">${user.patronymic}</p>
+                    <div class="card-meta">
+                        <span class="age"><i class="fas fa-birthday-cake"></i> ${user.age} років</span>
+                        <span class="status status-${user.status}">${user.status}</span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-edit"><i class="fas fa-edit"></i></button>
+                    <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            return card;
+        }
+
+        // Запускаємо завантаження при завантаженні сторінки
+        window.addEventListener('DOMContentLoaded', loadUsers);
+    </script>
+</body>
+
+</html>
