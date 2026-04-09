@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mongodb="http://www.liquibase.org/xml/ns/mongodb"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/mongodb
+        http://www.liquibase.org/xml/ns/mongodb/liquibase-mongodb-latest.xsd">
+
+    <changeSet id="create-and-insert-v2" author="dovzhenko">
+        <mongodb:createCollection collectionName="users"/>
+        
+        <mongodb:insertMany collectionName="users">
+            <mongodb:documents>
+                [
+                    {"prizvysche": "Dovzhenko", "imya": "Oleksandr", "po_batkovi": "Petrovych", "vik": 20},
+                    {"prizvysche": "Shevchenko", "imya": "Taras", "po_batkovi": "Hryhorovych", "vik": 47},
+                    {"prizvysche": "Kostenko", "imya": "Lina", "po_batkovi": "Vasylivna", "vik": 94},
+                    {"prizvysche": "Ukrainka", "imya": "Lesya", "po_batkovi": "Petrivna", "vik": 42},
+                    {"prizvysche": "Franko", "imya": "Ivan", "po_batkovi": "Yakovych", "vik": 60}
+                ]
+            </mongodb:documents>
+        </mongodb:insertMany>
+
+        <rollback>
+            <mongodb:dropCollection collectionName="users"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
